@@ -9,8 +9,9 @@ What to do:
   wait.... patience, it takes a while 
 You should get 5 exports: active, inactive, hourly active, hourly inactive, and debug. You should only need to download the first 4 unless you're running into problems with the app and then the debug info might be useful. 
 
-To convert the hourly data to the format we want I built a macro for everyone to run in excel. this is what that looks like: 
-Sub ReorganizeAndSaveHourlyDataInOneFile()
+To convert the hourly data to the format we want I built a macro for everyone to run in excel. this is what that looks like:
+
+ Sub ReorganizeAndSaveHourlyDataInOneFile()
     Dim ws As Worksheet
     Dim newWB As Workbook
     Dim newWS As Worksheet
@@ -21,7 +22,7 @@ Sub ReorganizeAndSaveHourlyDataInOneFile()
     Dim dayIndex As Integer
     Dim currentCol As Long, newCol As Long
     Dim metricName As String
-
+    
     ' Define the metrics order (adjust as needed for your dataset)
     metrics(1) = "Total_Bouts"
     metrics(2) = "Minutes_Running"
@@ -80,7 +81,7 @@ Sub ReorganizeAndSaveHourlyDataInOneFile()
 
     ' Close the new workbook
     newWB.Close SaveChanges:=False
-End Sub
+ End Sub
 
 You will run that macro by going into visual basic by opening your hourly excel > visual basic > module > paste this macro > back to excel > developer > macro > run macro you just created 
 it will create a new excel with the reorganized data 
