@@ -150,7 +150,7 @@ def main_process(input_dir, output_dir):
         excel_files,
         key=lambda f: (
             extract_date_from_filename(os.path.basename(f)) 
-            or datetime.min  # If None, treat it as the earliest possible date
+            or datetime.min  
         )
     )
 
