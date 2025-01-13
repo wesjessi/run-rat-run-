@@ -158,9 +158,9 @@ def main_process(input_dir, output_dir):
     # ... continue with the rest of your code ...
 
 
-# 3. Optionally, filter out files that have no valid date
-#    (if you *only* want files with valid dates)
-excel_files = [f for f in excel_files if extract_date_from_filename(os.path.basename(f)) is not None]
+    # 3. Optionally, filter out files that have no valid date
+    #    (if you *only* want files with valid dates)
+    excel_files = [f for f in excel_files if extract_date_from_filename(os.path.basename(f)) is not None]
 
     # Initialize data dictionaries
     active_data = {metric: {} for metric in ['Total_Bouts', 'Minutes_Running', 'Total_Wheel_Turns', 'Distance_m', 'Avg_Distance_per_Bout', 'Avg_Bout_Length', 'Speed']}
