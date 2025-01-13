@@ -2,6 +2,9 @@ import streamlit as st
 import os
 from running_data_analysis4 import main_process
 import tempfile
+import uuid
+import shutil
+
 
 # Streamlit App Title
 st.title("Running Data Analysis App")
@@ -23,16 +26,18 @@ else:
     uploaded_files = st.sidebar.file_uploader("Upload your input files", accept_multiple_files=True)
 
     if uploaded_files:
-        input_dir = "uploaded_files"
-        os.makedirs(input_dir, exist_ok=True)
+    # 1. Create a unique subfolder name (UUID)
+    session_id = str(uuid.uuid4())
+    input_dir = os.path.join("uploaded_files", session_id)
+    os.makedirs(input_dir, exist_ok=True)
 
-        # Save uploaded files
-        for uploaded_file in uploaded_files:
-            with open(os.path.join(input_dir, uploaded_file.name), "wb") as f:
-                f.write(uploaded_file.getbuffer())
+    # 2. Save uploaded files into this unique folder
+    for uploaded_file in uploaded_files:
+        with open(os.path.join(input_dir, uploaded_file.name), "wb") as f:
+            f.write(uploaded_file.getbuffer())
 
-        st.sidebar.success(f"Uploaded files saved to {input_dir}")
-
+    st.sidebar.success(f"Uploaded files saved to {input_dir}")
+    
 st.sidebar.write("Click **Start Processing** to generate results.")
 
 # Start Processing Button
@@ -47,9 +52,13 @@ if st.sidebar.button("Start Processing"):
 
             # Run the processing function
             main_process(input_dir, output_dir)
-
+            
+            # CLEAN UP: remove the entire unique folder with the just-processed files
+            shutil.rmtree(input_dir, ignore_errors=True)
+            
             st.session_state["processed"] = True
             st.success("Processing completed! Scroll down to download the results.")
+            
         except Exception as e:
             st.error(f"An error occurred: {str(e)}")
 
