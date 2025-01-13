@@ -273,3 +273,7 @@ def main_process(input_dir, output_dir):
     # Save Debug Data
     debug_df = pd.DataFrame(debug_data)
     debug_df.to_excel(os.path.join(output_dir, 'Debug_Output.xlsx'), index=False)
+    
+    # --- STEP E: Clean up the temp_input_dir so old files won't mix with future runs ---
+    shutil.rmtree(temp_input_dir)
+    print(f"Cleaned up temporary folder: {temp_input_dir}")
