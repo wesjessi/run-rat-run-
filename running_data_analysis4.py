@@ -131,14 +131,24 @@ def main_process(input_dir, output_dir):
     if not excel_files:
         raise FileNotFoundError(f"No Excel files found in directory: {input_dir}")
 
-    # Sort files by date, stripping the prefix and parsing the date
+# Sort files by date, stripping the prefix and parsing the date
     excel_files = sorted(
         excel_files,
-        key=lambda x: datetime.strptime(
-            os.path.basename(x).replace('MT14 running data ', '').split('.')[0],
-            '%m-%d-%y'
-        )
+# 1. Print out the files we found (for debugging)
+print("Excel files found:", excel_files)
+
+# 2. Sort by extracted date
+excel_files = sorted(
+    excel_files,
+    key=lambda f: (
+        extract_date_from_filename(os.path.basename(f)) 
+        or datetime.min  # If None, treat it as the earliest possible date
     )
+)
+
+# 3. Optionally, filter out files that have no valid date
+#    (if you *only* want files with valid dates)
+excel_files = [f for f in excel_files if extract_date_from_filename(os.path.basename(f)) is not None]
 
     # Initialize data dictionaries
     active_data = {metric: {} for metric in ['Total_Bouts', 'Minutes_Running', 'Total_Wheel_Turns', 'Distance_m', 'Avg_Distance_per_Bout', 'Avg_Bout_Length', 'Speed']}
