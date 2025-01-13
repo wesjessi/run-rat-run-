@@ -122,7 +122,18 @@ def save_hourly_data(output_dir, hourly_data, filename, phase_label):
 
         if not has_data:
             pd.DataFrame({"Message": ["No data available"]}).to_excel(writer, sheet_name="No Data")
-
+            
+# New helper function
+def extract_date_from_filename(filename):
+    pattern = r'(\d{1,2}-\d{1,2}-\d{2})'  # or (\d{1,2}-\d{1,2}-\d{4}) for 4-digit year
+    match = re.search(pattern, filename)
+    if match:
+        date_str = match.group(1)
+        try:
+            return datetime.strptime(date_str, '%m-%d-%y')
+        except ValueError:
+            return None
+    return None
                 
 # Main processing function
 def main_process(input_dir, output_dir):
@@ -131,20 +142,21 @@ def main_process(input_dir, output_dir):
     if not excel_files:
         raise FileNotFoundError(f"No Excel files found in directory: {input_dir}")
 
-# Sort files by date, stripping the prefix and parsing the date
+    # 1. Print out the files we found (for debugging)
+    print("Excel files found:", excel_files)
+
+    # 2. Sort by extracted date
     excel_files = sorted(
         excel_files,
-# 1. Print out the files we found (for debugging)
-print("Excel files found:", excel_files)
-
-# 2. Sort by extracted date
-excel_files = sorted(
-    excel_files,
-    key=lambda f: (
-        extract_date_from_filename(os.path.basename(f)) 
-        or datetime.min  # If None, treat it as the earliest possible date
+        key=lambda f: (
+            extract_date_from_filename(os.path.basename(f)) 
+            or datetime.min  # If None, treat it as the earliest possible date
+        )
     )
-)
+
+    # Now excel_files is sorted by date.
+    # ... continue with the rest of your code ...
+
 
 # 3. Optionally, filter out files that have no valid date
 #    (if you *only* want files with valid dates)
