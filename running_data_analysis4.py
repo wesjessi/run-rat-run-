@@ -3,6 +3,8 @@ import pandas as pd
 import glob
 import re
 import os
+import uuid 
+import shutil
 from datetime import datetime
 
 # Constants
@@ -138,30 +140,51 @@ def extract_date_from_filename(filename):
                 
 # Main processing function
 def main_process(input_dir, output_dir):
-    # Get list of Excel files
-    excel_files = glob.glob(os.path.join(input_dir, '*.xlsx'))
-    if not excel_files:
-        raise FileNotFoundError(f"No Excel files found in directory: {input_dir}")
+    """
+    1. Creates a unique subfolder in `input_dir` for the new run.
+    2. Moves all `*.xlsx` files from `input_dir` to that subfolder.
+    3. Processes the Excel files (as in your original code).
+    4. Cleans up the subfolder at the end.
+    """
 
-    # 1. Print out the files we found (for debugging)
+    # --- STEP A: Create a unique subfolder to isolate this run's files ---
+    # Generate a random folder name (UUID). You could also use a timestamp or anything unique.
+    session_id = str(uuid.uuid4())
+    temp_input_dir = os.path.join(input_dir, session_id)
+    os.makedirs(temp_input_dir, exist_ok=True)
+
+    # --- STEP B: Move all `*.xlsx` files from input_dir (top-level) into temp_input_dir ---
+    original_xlsx_files = glob.glob(os.path.join(input_dir, '*.xlsx'))
+    if not original_xlsx_files:
+        # If no files in input_dir, remove the empty subfolder and raise an error
+        shutil.rmtree(temp_input_dir)
+        raise FileNotFoundError(f"No Excel files found in directory: {input_dir}")
+    
+    for filepath in original_xlsx_files:
+        filename = os.path.basename(filepath)
+        shutil.move(filepath, os.path.join(temp_input_dir, filename))
+
+    # --- STEP C: Now gather the files from the *temp_input_dir* for processing ---
+    excel_files = glob.glob(os.path.join(temp_input_dir, '*.xlsx'))
+    # Debug: see which files we moved
     print("Excel files found:", excel_files)
 
-    # 2. Sort by extracted date
+    # Sort by extracted date
     excel_files = sorted(
         excel_files,
         key=lambda f: (
             extract_date_from_filename(os.path.basename(f)) 
-            or datetime.min  
+            or datetime.min
         )
     )
 
-    # Now excel_files is sorted by date.
-    # ... continue with the rest of your code ...
-
-
-    # 3. Optionally, filter out files that have no valid date
-    #    (if you *only* want files with valid dates)
+    # Optionally, filter out files with no valid date
     excel_files = [f for f in excel_files if extract_date_from_filename(os.path.basename(f)) is not None]
+    
+    # If after filtering there are no valid files, you might handle that:
+    if not excel_files:
+        shutil.rmtree(temp_input_dir)
+        raise FileNotFoundError("No valid date filenames found after filtering.")
 
     # Initialize data dictionaries
     active_data = {metric: {} for metric in ['Total_Bouts', 'Minutes_Running', 'Total_Wheel_Turns', 'Distance_m', 'Avg_Distance_per_Bout', 'Avg_Bout_Length', 'Speed']}
