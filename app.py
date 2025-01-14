@@ -36,8 +36,11 @@ else:
             with open(os.path.join(input_dir, uploaded_file.name), "wb") as f:
                 f.write(uploaded_file.getbuffer())
 
-    st.sidebar.success(f"Uploaded files saved to {input_dir}")
-    
+        st.sidebar.success(f"Uploaded files saved to {input_dir}")
+    else:
+        st.sidebar.info("No files uploaded yet. Please upload before processing.")
+        input_dir = None  # Or keep it undefined
+        
 st.sidebar.write("Click **Start Processing** to generate results.")
 
 # Start Processing Button
