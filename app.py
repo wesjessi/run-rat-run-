@@ -26,15 +26,15 @@ else:
     uploaded_files = st.sidebar.file_uploader("Upload your input files", accept_multiple_files=True)
 
     if uploaded_files:
-    # 1. Create a unique subfolder name (UUID)
-    session_id = str(uuid.uuid4())
-    input_dir = os.path.join("uploaded_files", session_id)
-    os.makedirs(input_dir, exist_ok=True)
+        # 1. Create a unique subfolder name (UUID)
+        session_id = str(uuid.uuid4())
+        input_dir = os.path.join("uploaded_files", session_id)
+        os.makedirs(input_dir, exist_ok=True)
 
-    # 2. Save uploaded files into this unique folder
-    for uploaded_file in uploaded_files:
-        with open(os.path.join(input_dir, uploaded_file.name), "wb") as f:
-            f.write(uploaded_file.getbuffer())
+        # 2. Save uploaded files into this unique folder
+        for uploaded_file in uploaded_files:
+            with open(os.path.join(input_dir, uploaded_file.name), "wb") as f:
+                f.write(uploaded_file.getbuffer())
 
     st.sidebar.success(f"Uploaded files saved to {input_dir}")
     
